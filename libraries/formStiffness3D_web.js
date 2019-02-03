@@ -1,6 +1,4 @@
-module.exports = {
-
-formStiffness3D: function (local_nodecoord, D){
+function formStiffness3D(local_nodecoord, D){
 	K_element = math.zeros(24, 24);
 	GaussPoint = [-0.577350269189626, 0.577350269189626];
 
@@ -72,7 +70,4 @@ for (p = 0; p < GaussPoint.length; p++){
     }
 }
 return K_element;
-}
-
-
 }
