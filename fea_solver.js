@@ -1,11 +1,34 @@
+//const compute = new require('dcp/compute')
+//const protocol = new require('dcp/protocol')
+//const paymentWallet = protocol.unlock(fs.openFileSync('myKey.keystore'))
+
+/*
 E  = 120e9;
 poisson = 0.40;
 numeleX = 2;
 numeleY = 2;
 numeleZ = 2;
-
+*/
 //function node_solve{
 // Calculate the Stress-Strain Relationship Matrix
+
+//var fea_data = JSON.parse(fea_job);
+const fea_helper = require("./libraries/formStiffness3D.js");
+math = require("./libraries/math.js");
+module.exports = {
+fea_solver: function (fea_data) {
+    E = fea_data.E;
+    poisson = fea_data.poisson;
+    numeleX = fea_data.numeleX;
+    numeleY = fea_data.numeleY;
+    numeleZ = fea_data.numeleZ;
+    Pz = fea_data.Pz;
+    Py = fea_data.Py;
+    Px = fea_data.Px;
+    Lx = fea_data.Lx;
+    Ly = fea_data.Ly;
+    Lz = fea_data.Lz;
+
 Dcoeff = E/((1 + poisson) * (1 - 2 * poisson));
 D = math.dotMultiply(Dcoeff, 
 	[[(1 - poisson), poisson, poisson, 0, 0, 0],
@@ -15,6 +38,7 @@ D = math.dotMultiply(Dcoeff,
     [0, 0, 0, 0, ((1 - 2 * poisson)/2), 0],
     [0, 0, 0, 0, 0, ((1 - 2 * poisson)/2)]]);
 
+/*
 // Set up the Geometric Conditions
 Pz = 100e3;
 Py = 0;
@@ -23,7 +47,7 @@ Px = 0;
 Lx = 1;
 Ly = 0.1;
 Lz = 0.1;
-
+*/
 numele = numeleX * numeleY * numeleZ;
 
 fixedPosnsX = [];
@@ -99,7 +123,7 @@ for (e = 0; e < Math.cbrt(numele) - 1; e++){
     					);
     }
 
-    K_element = formStiffness3D(local_nodecoord, D);
+    K_element = fea_helper.formStiffness3D(local_nodecoord, D);
     K = math.zeros(GDof, GDof);
 
     	K = K.subset(math.index((local_dofx._data[0]), (local_dofx._data[0])), K_element.subset(math.index(math.range(0, 8),math.range(0, 8))));
@@ -214,3 +238,8 @@ end
 displacements = math.multiply(math.inv(stiffness), force); 
 //Displacements are listed as u1, v1, w1, u2, v2, w2, ... etc.
 //}
+
+return [nodecoord._data, displacements._data]
+
+}
+}
